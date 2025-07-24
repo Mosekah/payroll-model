@@ -1,44 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CareBearBooks Payroll Calculator</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
+      background-color: #f0fff0;
+      color: #2c3e50;
       margin: 0;
       padding: 20px;
-      background: #f4fef4;
-      color: #333;
     }
-    h1, h2 {
+    h1, h2, h3 {
       color: #006400;
     }
-    section {
+    .section {
       background: #ffffff;
-      padding: 20px;
+      border: 1px solid #dcdcdc;
       border-radius: 8px;
+      padding: 20px;
       margin-bottom: 30px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     label {
+      font-weight: bold;
       display: block;
       margin-top: 12px;
-      font-weight: bold;
     }
-    input, select {
+    input[type="number"], input[type="text"], select {
       width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
+      padding: 10px;
+      border: 1px solid #cccccc;
       border-radius: 4px;
+      margin-top: 5px;
     }
-    input[type="number"] {
-      -moz-appearance: textfield;
-    }
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
@@ -48,167 +46,179 @@
       margin-top: 15px;
     }
     table, th, td {
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #e0f7e0;
+      color: #006400;
     }
     th, td {
       padding: 10px;
-      text-align: center;
+      text-align: left;
     }
-    th {
+    .chatbot {
+      position: fixed;
+      bottom: 0;
+      right: 20px;
+      background-color: #ffffff;
+      border: 2px solid #006400;
+      border-radius: 10px 10px 0 0;
+      width: 300px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .chatbot h3 {
+      margin: 0;
+      padding: 10px;
       background-color: #006400;
       color: white;
-    }
-    .button {
-      background: #006400;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    .button:hover {
-      background: #228B22;
+      text-align: center;
+      border-radius: 10px 10px 0 0;
     }
     .faq {
-      background-color: #e0f7e0;
-      padding: 20px;
-      margin-top: 30px;
-      border-left: 6px solid #006400;
+      padding: 15px;
     }
-    .chatbot-question {
-      font-weight: bold;
+    .faq p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    .faq strong {
+      color: #006400;
     }
   </style>
 </head>
 <body>
 
-<h1>CareBearBooks Payroll Calculator</h1>
+  <h1>CareBearBooks Payroll Calculator</h1>
 
-<section>
-  <h2>Step 1: Business Info</h2>
-  <label for="bizType">Business Type</label>
-  <select id="bizType">
-    <option value="LLC">LLC</option>
-    <option value="S-Corp">S-Corp</option>
-    <option value="Partnership">Partnership</option>
-    <option value="Sole Proprietor">Sole Proprietor</option>
-  </select>
+  <!-- Step 1: Business Info -->
+  <div class="section">
+    <h2>Step 1: Business Info</h2>
+    <label>Business Type:</label>
+    <select id="businessType">
+      <option value="LLC">LLC</option>
+      <option value="S-Corp">S-Corp</option>
+      <option value="Partnership">Partnership</option>
+      <option value="Sole Proprietorship">Sole Proprietorship</option>
+    </select>
 
-  <label for="w2Salary">Owner W-2 Salary (if S-Corp)</label>
-  <input type="number" id="w2Salary" min="0">
+    <div id="w2Section" style="display:none;">
+      <label>Enter your W-2 Salary:</label>
+      <input type="number" min="0" id="w2Salary" />
 
-  <label>Is the W-2 salary above monthly or annual?</label>
-  <select id="w2SalaryType">
-    <option value="monthly">Monthly</option>
-    <option value="annual">Annual</option>
-  </select>
+      <label>Is the salary above a monthly or annual salary?</label>
+      <select id="salaryFrequency">
+        <option value="monthly">Monthly</option>
+        <option value="annual">Annual</option>
+      </select>
+    </div>
 
-  <label for="lnirate">WA L&I Rate (%)</label>
-  <input type="number" id="lnirate" min="0" step="0.01">
+    <label>Workers’ Comp Rate (in decimal, e.g. 0.025):</label>
+    <input type="number" min="0" step="0.001" id="workersComp" />
 
-  <label for="esdrate">WA ESD Rate (%)</label>
-  <input type="number" id="esdrate" min="0" step="0.01">
+    <label>ESD (WA State Unemployment Tax) Rate:</label>
+    <input type="number" min="0" step="0.01" id="esdRate" />
 
-  <label for="federalrate">Federal Withholding Rate (%)</label>
-  <input type="number" id="federalrate" min="0" step="0.01">
+    <label>Federal Withholding % (e.g. 12% = 0.12):</label>
+    <input type="number" min="0" step="0.01" id="fedWithholding" />
+  </div>
 
-  <label for="payFreq">Payroll Frequency</label>
-  <select id="payFreq">
-    <option value="monthly">Monthly</option>
-    <option value="biweekly">Biweekly</option>
-    <option value="weekly">Weekly</option>
-  </select>
+  <!-- Step 2: Employee Wage Calculator -->
+  <div class="section">
+    <h2>Step 2: Employee Info</h2>
+    <p style="color:#006400;"><em>Tip: If you're an S-Corp owner, include yourself as an employee below.</em></p>
+    <table id="employeeTable">
+      <thead>
+        <tr>
+          <th>Add to Payroll?</th>
+          <th>Employee Name</th>
+          <th>Payment Type</th>
+          <th>Hourly Rate</th>
+          <th>Daily Hours</th>
+          <th>Days/Week</th>
+          <th>Daily Pay</th>
+          <th>Weekly Pay</th>
+          <th>Monthly Pay</th>
+          <th>Weeks/Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="checkbox" class="addToPayroll"/></td>
+          <td><input type="text" /></td>
+          <td>
+            <select>
+              <option value="hourly">Hourly</option>
+              <option value="salary">Salary</option>
+              <option value="daily">Daily</option>
+            </select>
+          </td>
+          <td><input type="number" class="hourly" min="0"/></td>
+          <td><input type="number" class="dailyHours" min="0"/></td>
+          <td><input type="number" class="daysPerWeek" min="0"/></td>
+          <td class="dailyPay">$0.00</td>
+          <td class="weeklyPay">$0.00</td>
+          <td class="monthlyPay">$0.00</td>
+          <td><input type="number" value="52" class="weeksPerYear" min="0"/></td>
+        </tr>
+        <!-- Additional rows can be duplicated dynamically -->
+      </tbody>
+    </table>
+  </div>
 
-  <label for="zip">Zip Code</label>
-  <input type="text" id="zip">
-</section>
+  <!-- Step 3: Payroll Info Analysis -->
+  <div class="section">
+    <h2>Step 3: Payroll Info Analysis</h2>
+    <p><strong>Total Annual Expenses For ALL Staff:</strong> <span id="totalAnnualExpenses">$0.00</span></p>
+    <p><strong>Employer Payroll Taxes on your W-2 salary (S-Corp only):</strong> <span id="payrollTaxes">$0.00</span></p>
+    <p><strong>Total Employee Deductions (Monthly):</strong> <span id="employeeDeduction">$0.00</span></p>
+    <p><strong>Total Take-home Pay (Monthly):</strong> <span id="takeHomePay">$0.00</span></p>
+  </div>
 
-<section>
-  <h2>Step 2: Employee Wage Calculator</h2>
-  <p><strong>Reminder:</strong> If you're an S-Corp owner, make sure you also include yourself as an employee.</p>
-  <table id="employeeTable">
-    <thead>
-      <tr>
-        <th>Include in Payroll?</th>
-        <th>Employee Name</th>
-        <th>Hourly Rate</th>
-        <th>Hours per Day</th>
-        <th>Days per Week</th>
-        <th>Payment Type</th>
-        <th>Daily Pay</th>
-        <th>Weekly Pay</th>
-        <th>Monthly Pay</th>
-        <th>Weeks per Year</th>
-      </tr>
-    </thead>
-    <tbody id="employeeRows">
-      <tr>
-        <td><input type="checkbox" class="onPayroll"></td>
-        <td><input type="text" class="empName"></td>
-        <td><input type="number" class="hourlyRate" min="0"></td>
-        <td><input type="number" class="hoursPerDay" min="0"></td>
-        <td><input type="number" class="daysPerWeek" min="0"></td>
-        <td>
-          <select class="payType">
-            <option value="hourly">Hourly</option>
-            <option value="salary">Salary</option>
-          </select>
-        </td>
-        <td class="dailyPay"></td>
-        <td class="weeklyPay"></td>
-        <td class="monthlyPay"></td>
-        <td><input type="number" class="weeksPerYear" min="0" value="52"></td>
-      </tr>
-    </tbody>
-  </table>
-  <button class="button" onclick="addEmployeeRow()">Add Another Employee</button>
-</section>
+  <!-- Step 4: Under the Table Analysis -->
+  <div class="section">
+    <h2>Step 4: Under vs Over the Table Risk</h2>
+    <label>Select employees to include in official payroll (checkboxes above).</label>
 
-<section>
-  <h2>Step 3: Payroll Info Analysis</h2>
-  <p><strong>Total Annual Expenses For ALL Staff:</strong> <span id="totalAnnualExpenses">$0.00</span></p>
-  <p><strong>Employer Payroll Taxes (W-2, if S-Corp):</strong> <span id="employerTaxes">$0.00</span></p>
-  <p><strong>Total Employee Deduction (monthly):</strong> <span id="empDeduction">$0.00</span></p>
-  <p><strong>Total Take-home Pay (monthly):</strong> <span id="takeHome">$0.00</span></p>
-</section>
+    <h3>Analysis:</h3>
+    <p><strong>What you lose by paying under the table:</strong> $<span id="lossUnderTable">0.00</span></p>
+    <p><strong>What you lose by paying partially under the table:</strong> $<span id="lossPartial">0.00</span></p>
+    <p><strong>Audit Penalty Risk (under the table):</strong> $<span id="penaltyUnderTable">0.00</span></p>
+    <p><strong>Audit Penalty Risk (partial):</strong> $<span id="penaltyPartial">0.00</span></p>
+    <p><strong>Potential Total Cost (under the table):</strong> $<span id="costUnderTable">0.00</span></p>
+    <p><strong>Potential Total Cost (partial):</strong> $<span id="costPartial">0.00</span></p>
+    <p><strong>Total Estimated Exposure (IRS back taxes, penalties, WA audit):</strong> $<span id="exposureTotal">0.00</span></p>
+  </div>
 
-<section>
-  <h2>Step 4: Payroll Compliance Risk Analysis</h2>
-  <p><strong>What you lose by paying under the table:</strong> <span id="lossUnder">$0.00</span></p>
-  <p><strong>What you lose by paying partially under the table:</strong> <span id="lossPartial">$0.00</span></p>
-  <p><strong>Audit Penalty Risk (under the table):</strong> <span id="penaltyUnder">$0.00</span></p>
-  <p><strong>Audit Penalty Risk (partial):</strong> <span id="penaltyPartial">$0.00</span></p>
-  <p><strong>Potential Total Cost (under the table):</strong> <span id="totalCostUnder">$0.00</span></p>
-  <p><strong>Potential Total Cost (partial):</strong> <span id="totalCostPartial">$0.00</span></p>
-  <p><strong>Total Estimated Exposure (IRS penalties, audit risk, lost deductions):</strong> <span id="totalExposure">$0.00</span></p>
-</section>
+  <!-- FAQ Chatbot -->
+  <div class="chatbot">
+    <h3>📘 FAQ Assistant</h3>
+    <div class="faq">
+      <p><strong>Q:</strong> What’s “over the table” pay?</p>
+      <p><strong>A:</strong> Wages reported to IRS with taxes withheld.</p>
 
-<section class="faq">
-  <h2>📌 FAQ – Payroll Assistant Chatbot</h2>
-  <p class="chatbot-question">Q: I'm not sure if I should be an S-Corp. How do I know?</p>
-  <p>A: Use our S-Corp Viability Tool or consult with your accountant to compare taxes, compliance, and savings.</p>
+      <p><strong>Q:</strong> Do I need a W-2 if I’m an S-Corp owner?</p>
+      <p><strong>A:</strong> Yes, S-Corp owners must take a “reasonable” W-2 salary.</p>
 
-  <p class="chatbot-question">Q: What are L&I and ESD rates?</p>
-  <p>A: WA L&I (workers' comp) and ESD (unemployment tax) rates are set by the state. Check your latest WA State Employment Security documents or DOR portal.</p>
+      <p><strong>Q:</strong> What’s the risk of paying under the table?</p>
+      <p><strong>A:</strong> IRS back taxes, penalties, audits, and loss of deductions.</p>
 
-  <p class="chatbot-question">Q: What if I pay someone under the table?</p>
-  <p>A: This model shows how much you lose and the risks involved. It's best to stay compliant.</p>
-</section>
+      <p><strong>Q:</strong> How do I estimate my payroll tax?</p>
+      <p><strong>A:</strong> Input your federal, workers' comp, and ESD % on Step 1.</p>
+    </div>
+  </div>
 
-<script>
-  function addEmployeeRow() {
-    const row = document.querySelector("#employeeRows tr").cloneNode(true);
-    row.querySelectorAll("input").forEach(input => input.value = "");
-    row.querySelector(".dailyPay").textContent = "";
-    row.querySelector(".weeklyPay").textContent = "";
-    row.querySelector(".monthlyPay").textContent = "";
-    document.getElementById("employeeRows").appendChild(row);
-  }
+  <script>
+    document.getElementById("businessType").addEventListener("change", function() {
+      document.getElementById("w2Section").style.display = this.value === "S-Corp" ? "block" : "none";
+    });
 
-  // You can expand this logic to calculate pay and fill in analysis
-  // Placeholder values used above
-</script>
+    // Add further JS logic to auto-calculate daily/weekly/monthly pay
+    // And block negative values
+    // And generate risk values using approximated formulas
+
+  </script>
 
 </body>
 </html>
