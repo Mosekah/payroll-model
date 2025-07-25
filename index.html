@@ -6,219 +6,365 @@
   <title>CareBearBooks Payroll Calculator</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f0fff0;
-      color: #2c3e50;
+      font-family: Arial, sans-serif;
+      background-color: #f5fff5;
+      color: #222;
       margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
       padding: 20px;
     }
-    h1, h2, h3 {
-      color: #006400;
-    }
-    .section {
-      background: #ffffff;
-      border: 1px solid #dcdcdc;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    h1, h2 {
+      background-color: #b2e9b2;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 30px;
     }
     label {
-      font-weight: bold;
       display: block;
-      margin-top: 12px;
+      margin-top: 10px;
     }
-    input[type="number"], input[type="text"], select {
+    input, select {
       width: 100%;
-      padding: 10px;
-      border: 1px solid #cccccc;
+      padding: 8px;
+      margin-top: 4px;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      margin-top: 5px;
     }
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
+    .tooltip {
+      display: inline-block;
+      margin-left: 8px;
+      font-size: 14px;
+      color: #555;
+      cursor: help;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 15px;
-    }
-    table, th, td {
-      border: 1px solid #ddd;
-    }
-    th {
-      background-color: #e0f7e0;
-      color: #006400;
+      margin-top: 20px;
     }
     th, td {
-      padding: 10px;
-      text-align: left;
-    }
-    .chatbot {
-      position: fixed;
-      bottom: 0;
-      right: 20px;
-      background-color: #ffffff;
-      border: 2px solid #006400;
-      border-radius: 10px 10px 0 0;
-      width: 300px;
-      max-height: 400px;
-      overflow-y: auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-    .chatbot h3 {
-      margin: 0;
-      padding: 10px;
-      background-color: #006400;
-      color: white;
+      border: 1px solid #ccc;
+      padding: 8px;
       text-align: center;
-      border-radius: 10px 10px 0 0;
     }
-    .faq {
-      padding: 15px;
+    th {
+      background-color: #e6ffe6;
     }
-    .faq p {
-      margin: 5px 0;
-      font-size: 14px;
+    .hidden {
+      display: none;
     }
-    .faq strong {
-      color: #006400;
+    .btn {
+      padding: 10px 20px;
+      background-color: #66cc66;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #55bb55;
+    }
+    .section {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 8px;
+      background-color: #ffffff;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>CareBearBooks Payroll Calculator</h1>
 
-  <h1>CareBearBooks Payroll Calculator</h1>
+    <!-- ✅ STEP 1: Business Info -->
+    <div id="step1" class="section">
+      <h2>✅ Step 1: Business Info</h2>
 
-  <!-- Step 1: Business Info -->
-  <div class="section">
-    <h2>Step 1: Business Info</h2>
-    <label>Business Type:</label>
-    <select id="businessType">
-      <option value="LLC">LLC</option>
-      <option value="S-Corp">S-Corp</option>
-      <option value="Partnership">Partnership</option>
-      <option value="Sole Proprietorship">Sole Proprietorship</option>
-    </select>
-
-    <div id="w2Section" style="display:none;">
-      <label>Enter your W-2 Salary:</label>
-      <input type="number" min="0" id="w2Salary" />
-
-      <label>Is the salary above a monthly or annual salary?</label>
-      <select id="salaryFrequency">
-        <option value="monthly">Monthly</option>
-        <option value="annual">Annual</option>
+      <label for="bizType">Business Type</label>
+      <select id="bizType" onchange="toggleScorpFields();">
+        <option value="LLC">LLC</option>
+        <option value="Partnership">Partnership</option>
+        <option value="S-Corp">S-Corp</option>
       </select>
+
+      <div id="scorpFields" class="hidden">
+        <label for="w2Salary">W-2 Salary</label>
+        <input type="number" id="w2Salary" />
+        <label for="w2Freq">W-2 Salary Frequency</label>
+        <select id="w2Freq">
+          <option value="Hourly">Hourly</option>
+          <option value="Daily">Daily</option>
+          <option value="Weekly">Weekly</option>
+          <option value="Monthly">Monthly</option>
+        </select>
+      </div>
+
+      <label for="waLiRate">WA L&I Rate (%)</label>
+      <input type="number" id="waLiRate" step="0.01"/>
+
+      <label for="waEsdRate">WA ESD Rate (%)</label>
+      <input type="number" id="waEsdRate" step="0.01"/>
+
+      <label for="fedWithholding">Federal Withholding Rate (%)</label>
+      <input type="number" id="fedWithholding" step="0.01"/>
+
+      <label for="socialSecurityRate">Social Security Rate (%)</label>
+      <input type="number" id="socialSecurityRate" value="6.2" step="0.01"/>
+
+      <label for="medicareRate">Medicare Rate (%)</label>
+      <input type="number" id="medicareRate" value="1.45" step="0.01"/>
+
+      <label for="futaRate">FUTA Rate (%)</label>
+      <input type="number" id="futaRate" value="0.6" step="0.01"/>
+
+      <label for="waSuiRate">WA SUI Rate (%)</label>
+      <input type="number" id="waSuiRate" value="2.5" step="0.01"/>
+
+      <label for="waPfmlRate">WA PFML Rate (%)</label>
+      <input type="number" id="waPfmlRate" value="0.4" step="0.01"/>
+
+      <label for="employeeCount">Number of Employees</label>
+      <input type="number" id="employeeCount" value="1" />
+
+      <label for="bizZip">Business Zip Code</label>
+      <input type="text" id="bizZip" />
+
+      <label for="bizEmail">Business Email</label>
+      <input type="email" id="bizEmail" />
     </div>
 
-    <label>Workers’ Comp Rate (in decimal, e.g. 0.025):</label>
-    <input type="number" min="0" step="0.001" id="workersComp" />
+    <script>
+      function toggleScorpFields() {
+        const bizType = document.getElementById("bizType").value;
+        document.getElementById("scorpFields").classList.toggle("hidden", bizType !== "S-Corp");
+      }
+    </script>
+    <!-- ✅ STEP 2: Employee Info Table -->
+    <div id="step2" class="section">
+      <h2>✅ Step 2: Employee Info Table</h2>
+      <table id="employeeTable">
+        <thead>
+          <tr>
+            <th>Employee Name</th>
+            <th>Add to Payroll</th>
+            <th>Hours per Day</th>
+            <th>Days per Week</th>
+            <th>Hourly Rate</th>
+            <th>Daily Pay</th>
+            <th>Weekly Pay</th>
+            <th>Monthly Pay</th>
+            <th>Annual Pay</th>
+            <th>Weeks per Year</th>
+            <th>Over/Under the Table</th>
+          </tr>
+        </thead>
+        <tbody id="empRows"></tbody>
+      </table>
+      <button class="btn" onclick="addEmployee()">Add Employee</button>
+    </div>
 
-    <label>ESD (WA State Unemployment Tax) Rate:</label>
-    <input type="number" min="0" step="0.01" id="esdRate" />
+    <script>
+      let employees = [];
 
-    <label>Federal Withholding % (e.g. 12% = 0.12):</label>
-    <input type="number" min="0" step="0.01" id="fedWithholding" />
-  </div>
-
-  <!-- Step 2: Employee Wage Calculator -->
-  <div class="section">
-    <h2>Step 2: Employee Info</h2>
-    <p style="color:#006400;"><em>Tip: If you're an S-Corp owner, include yourself as an employee below.</em></p>
-    <table id="employeeTable">
-      <thead>
-        <tr>
-          <th>Add to Payroll?</th>
-          <th>Employee Name</th>
-          <th>Payment Type</th>
-          <th>Hourly Rate</th>
-          <th>Daily Hours</th>
-          <th>Days/Week</th>
-          <th>Daily Pay</th>
-          <th>Weekly Pay</th>
-          <th>Monthly Pay</th>
-          <th>Weeks/Year</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input type="checkbox" class="addToPayroll"/></td>
-          <td><input type="text" /></td>
+      function addEmployee() {
+        const index = employees.length;
+        employees.push({});
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td><input type="text" onchange="updateEmployee(${index})" /></td>
+          <td><input type="checkbox" onchange="updateEmployee(${index})" /></td>
+          <td><input type="number" onchange="updateEmployee(${index})" /></td>
+          <td><input type="number" onchange="updateEmployee(${index})" /></td>
+          <td><input type="number" onchange="updateEmployee(${index})" /></td>
+          <td><input type="number" onchange="updateEmployee(${index}, 'daily')" /></td>
+          <td><input type="number" onchange="updateEmployee(${index}, 'weekly')" /></td>
+          <td><input type="number" onchange="updateEmployee(${index}, 'monthly')" /></td>
+          <td><input type="number" disabled /></td>
+          <td><input type="number" value="52" onchange="updateEmployee(${index})" /></td>
           <td>
-            <select>
-              <option value="hourly">Hourly</option>
-              <option value="salary">Salary</option>
-              <option value="daily">Daily</option>
+            <select onchange="updateEmployee(${index})">
+              <option value="Over">Over</option>
+              <option value="Under">Under</option>
             </select>
           </td>
-          <td><input type="number" class="hourly" min="0"/></td>
-          <td><input type="number" class="dailyHours" min="0"/></td>
-          <td><input type="number" class="daysPerWeek" min="0"/></td>
-          <td class="dailyPay">$0.00</td>
-          <td class="weeklyPay">$0.00</td>
-          <td class="monthlyPay">$0.00</td>
-          <td><input type="number" value="52" class="weeksPerYear" min="0"/></td>
-        </tr>
-        <!-- Additional rows can be duplicated dynamically -->
-      </tbody>
-    </table>
-  </div>
+        `;
+        document.getElementById("empRows").appendChild(row);
+      }
 
-  <!-- Step 3: Payroll Info Analysis -->
-  <div class="section">
-    <h2>Step 3: Payroll Info Analysis</h2>
-    <p><strong>Total Annual Expenses For ALL Staff:</strong> <span id="totalAnnualExpenses">$0.00</span></p>
-    <p><strong>Employer Payroll Taxes on your W-2 salary (S-Corp only):</strong> <span id="payrollTaxes">$0.00</span></p>
-    <p><strong>Total Employee Deductions (Monthly):</strong> <span id="employeeDeduction">$0.00</span></p>
-    <p><strong>Total Take-home Pay (Monthly):</strong> <span id="takeHomePay">$0.00</span></p>
-  </div>
+      function updateEmployee(index, overrideField = '') {
+        const row = document.getElementById("empRows").children[index];
+        const cells = row.querySelectorAll("input, select");
 
-  <!-- Step 4: Under the Table Analysis -->
-  <div class="section">
-    <h2>Step 4: Under vs Over the Table Risk</h2>
-    <label>Select employees to include in official payroll (checkboxes above).</label>
+        const hours = parseFloat(cells[2].value) || 0;
+        const days = parseFloat(cells[3].value) || 0;
+        let hourly = parseFloat(cells[4].value) || 0;
+        let daily = parseFloat(cells[5].value) || hourly * hours;
+        let weekly = parseFloat(cells[6].value) || daily * days;
+        let monthly = parseFloat(cells[7].value) || weekly * 4.33;
+        const weeks = parseFloat(cells[9].value) || 52;
+        let annual = weekly * weeks;
 
-    <h3>Analysis:</h3>
-    <p><strong>What you lose by paying under the table:</strong> $<span id="lossUnderTable">0.00</span></p>
-    <p><strong>What you lose by paying partially under the table:</strong> $<span id="lossPartial">0.00</span></p>
-    <p><strong>Audit Penalty Risk (under the table):</strong> $<span id="penaltyUnderTable">0.00</span></p>
-    <p><strong>Audit Penalty Risk (partial):</strong> $<span id="penaltyPartial">0.00</span></p>
-    <p><strong>Potential Total Cost (under the table):</strong> $<span id="costUnderTable">0.00</span></p>
-    <p><strong>Potential Total Cost (partial):</strong> $<span id="costPartial">0.00</span></p>
-    <p><strong>Total Estimated Exposure (IRS back taxes, penalties, WA audit):</strong> $<span id="exposureTotal">0.00</span></p>
-  </div>
+        if (overrideField === 'daily') {
+          daily = parseFloat(cells[5].value) || 0;
+          hourly = hours ? daily / hours : 0;
+          weekly = daily * days;
+          monthly = weekly * 4.33;
+          annual = weekly * weeks;
+        } else if (overrideField === 'weekly') {
+          weekly = parseFloat(cells[6].value) || 0;
+          daily = days ? weekly / days : 0;
+          hourly = hours ? daily / hours : 0;
+          monthly = weekly * 4.33;
+          annual = weekly * weeks;
+        } else if (overrideField === 'monthly') {
+          monthly = parseFloat(cells[7].value) || 0;
+          weekly = monthly / 4.33;
+          daily = days ? weekly / days : 0;
+          hourly = hours ? daily / hours : 0;
+          annual = weekly * weeks;
+        }
 
-  <!-- FAQ Chatbot -->
-  <div class="chatbot">
-    <h3>📘 FAQ Assistant</h3>
-    <div class="faq">
-      <p><strong>Q:</strong> What’s “over the table” pay?</p>
-      <p><strong>A:</strong> Wages reported to IRS with taxes withheld.</p>
+        // Update calculated values
+        cells[4].value = hourly.toFixed(2);
+        cells[5].value = daily.toFixed(2);
+        cells[6].value = weekly.toFixed(2);
+        cells[7].value = monthly.toFixed(2);
+        cells[8].value = annual.toFixed(2);
 
-      <p><strong>Q:</strong> Do I need a W-2 if I’m an S-Corp owner?</p>
-      <p><strong>A:</strong> Yes, S-Corp owners must take a “reasonable” W-2 salary.</p>
+        const w2Salary = parseFloat(document.getElementById("w2Salary").value || 0);
+        if (w2Salary && Math.abs(w2Salary - annual) < 0.01) {
+          row.classList.add("scorp-owner");
+        } else {
+          row.classList.remove("scorp-owner");
+        }
 
-      <p><strong>Q:</strong> What’s the risk of paying under the table?</p>
-      <p><strong>A:</strong> IRS back taxes, penalties, audits, and loss of deductions.</p>
-
-      <p><strong>Q:</strong> How do I estimate my payroll tax?</p>
-      <p><strong>A:</strong> Input your federal, workers' comp, and ESD % on Step 1.</p>
+        updatePayrollSummary();
+        updateRiskTable();
+      }
+    </script>
+    <!-- ✅ STEP 3: Payroll Analysis -->
+    <div id="step3" class="section">
+      <h2>✅ Step 3: Payroll Analysis</h2>
+      <table id="payrollAnalysisTable">
+        <thead>
+          <tr>
+            <th>Employee Name</th>
+            <th>Annual Pay</th>
+            <th>FICA Tax (7.65%)</th>
+            <th>Federal Tax</th>
+            <th>State Tax</th>
+            <th>Net Pay</th>
+          </tr>
+        </thead>
+        <tbody id="analysisRows"></tbody>
+      </table>
     </div>
-  </div>
 
-  <script>
-    document.getElementById("businessType").addEventListener("change", function() {
-      document.getElementById("w2Section").style.display = this.value === "S-Corp" ? "block" : "none";
-    });
+    <script>
+      const FICA_RATE = 0.0765;
 
-    // Add further JS logic to auto-calculate daily/weekly/monthly pay
-    // And block negative values
-    // And generate risk values using approximated formulas
+      function updatePayrollSummary() {
+        const rows = document.getElementById("empRows").children;
+        const analysisBody = document.getElementById("analysisRows");
+        analysisBody.innerHTML = "";
 
-  </script>
+        for (let i = 0; i < rows.length; i++) {
+          const empRow = rows[i];
+          const inputs = empRow.querySelectorAll("input, select");
+          const name = inputs[0].value || `Employee ${i + 1}`;
+          const annual = parseFloat(inputs[8].value) || 0;
 
-</body>
-</html>
+          const federalRate = parseFloat(document.getElementById("fedTaxRate").value) || 0;
+          const stateRate = parseFloat(document.getElementById("stateTaxRate").value) || 0;
+
+          const ficaTax = annual * FICA_RATE;
+          const federalTax = annual * (federalRate / 100);
+          const stateTax = annual * (stateRate / 100);
+          const netPay = annual - ficaTax - federalTax - stateTax;
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${annual.toFixed(2)}</td>
+            <td>${ficaTax.toFixed(2)}</td>
+            <td>${federalTax.toFixed(2)}</td>
+            <td>${stateTax.toFixed(2)}</td>
+            <td>${netPay.toFixed(2)}</td>
+          `;
+
+          analysisBody.appendChild(row);
+        }
+      }
+    </script>
+    <!-- ✅ STEP 4: Compliance Risk Check -->
+    <div id="step4" class="section">
+      <h2>✅ Step 4: Risk & Compliance Detection</h2>
+      <table id="riskTable">
+        <thead>
+          <tr>
+            <th>Employee Name</th>
+            <th>Annual Pay</th>
+            <th>W-2 Match</th>
+            <th>Payroll Added</th>
+            <th>Over/Under the Table</th>
+            <th>Risk Level</th>
+          </tr>
+        </thead>
+        <tbody id="riskRows"></tbody>
+      </table>
+
+      <div class="cta">
+        <p><strong>🔔 Potential risks detected?</strong> Don’t leave it to chance.</p>
+        <p>Contact <strong>Carebear Books</strong> today and book your appointment for a personalized walkthrough of this face and receive a detailed payroll & tax analysis.</p>
+        <p>📅 We’ll go step-by-step to ensure you're compliant, protected, and optimized for S-Corp operations.</p>
+      </div>
+    </div>
+
+    <script>
+      function updateRiskTable() {
+        const rows = document.getElementById("empRows").children;
+        const riskBody = document.getElementById("riskRows");
+        riskBody.innerHTML = "";
+
+        for (let i = 0; i < rows.length; i++) {
+          const empRow = rows[i];
+          const inputs = empRow.querySelectorAll("input, select");
+          const name = inputs[0].value || `Employee ${i + 1}`;
+          const annual = parseFloat(inputs[8].value) || 0;
+          const addedToPayroll = inputs[1].checked;
+          const underOver = inputs[10].value;
+
+          const w2Salary = parseFloat(document.getElementById("w2Salary").value || 0);
+          const w2Match = Math.abs(annual - w2Salary) < 0.01;
+
+          let risk = "Low";
+          if (!addedToPayroll || underOver === "Under") {
+            risk = "Medium";
+          }
+          if (!addedToPayroll && underOver === "Under") {
+            risk = "High";
+          }
+          if (w2Match && addedToPayroll && underOver === "Over") {
+            risk = "None";
+          }
+
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${name}</td>
+            <td>${annual.toFixed(2)}</td>
+            <td>${w2Match ? "✅ Yes" : "❌ No"}</td>
+            <td>${addedToPayroll ? "✅ Yes" : "❌ No"}</td>
+            <td>${underOver}</td>
+            <td>${risk}</td>
+          `;
+
+          riskBody.appendChild(row);
+        }
+      }
+    </script>
